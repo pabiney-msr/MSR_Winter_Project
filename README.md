@@ -53,8 +53,8 @@ Implement a neural network that is capable of playing [Pokémon Red/Blue](https:
 ~~1. Add Visual Boy Advance to Project~~ | 29. Research reinforcement learning
 ~~2. Add Pokemon Red/Blue ROM to Project~~ | 30. Incorporate reinforcement learning to the training model
 ~~3. Add Back-up game (Puzzle Bobble) ROM to Project~~ | 31. Estimate time needed for experiment to execute 
-~~4. Create GitHub~~ | (if the amount of time needed for the experiment to execute is longer than practical, reevaluate experiment to reduce the estimated time)32. Debug code with the smallest ranges possible
-~~5. Create File for AI in Python~~ |  to save time
+~~4. Create GitHub~~ | (if the amount of time needed for the experiment to execute is longer than practical, reevaluate experiment to reduce the estimated time)
+~~5. Create File for AI in Python~~ | 32. Debug code with the smallest ranges possible to save time
 ~~6. Create .gitignore~~ | 33. Begin execution of experiment
 ~~7. Install Ubuntu 16.04 on Test laptop~~ | 
  | **Week 6**
