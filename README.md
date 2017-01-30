@@ -21,7 +21,7 @@ Implement a neural network that is capable of playing [Pokémon Red/Blue](https:
 
 ### Fall Back Strategy
 * Choose a subset of levels.
-* Choose a different game.
+* Choose a different game (Puzzle-Bobble Millennium).
 
 ### [Pokémon Red/Blue](https://en.wikipedia.org/wiki/Pokémon_Red_and_Blue "Pokémon Red/Blue")
 > “The player controls the protagonist from an [overhead perspective](https://en.wikipedia.org/wiki/Top-down_perspective "overhead perspective") and navigates him throughout the fictional region of Kanto in a quest to master [Pokémon battling](https://en.wikipedia.org/wiki/Pokémon_battle "Pokémon battling"). The goal of the games is to become the champion of the Pokémon League by defeating the eight [Gym Leaders](https://en.wikipedia.org/wiki/Gym_Leaders "Gym Leaders") and then the top four Pokémon trainers in the land, the [Elite Four](https://en.wikipedia.org/wiki/Elite_Four "Elite Foure"). Another objective is to complete the [Pokédex](https://en.wikipedia.org/wiki/Pokédex "Pokédex"), an in-game encyclopedia, by obtaining the 150 available Pokémon. Red and Blue utilize the [Game Link Cable](https://en.wikipedia.org/wiki/Game_Link_Cable "Game Link Cable"), which connects two games together and allows Pokémon to be traded or battled between games. Both titles are independent of each other but feature the same plot, and while they can be played separately, it is necessary for players to trade among both games in order to obtain all of the first 150 Pokémon.”
@@ -47,38 +47,40 @@ Implement a neural network that is capable of playing [Pokémon Red/Blue](https:
 ### [Q-learning](https://en.wikipedia.org/wiki/Q-learning "Q-learning")
 > “**Q-learning** is a model-free [reinforcement learning](https://en.wikipedia.org/wiki/Reinforcement_learning "reinforcement learning") technique. Specifically, Q-learning can be used to find an optimal action-selection policy for any given (finite) [Markov decision process](https://en.wikipedia.org/wiki/Markov_decision_process "Markov decision process") (MDP). It works by learning an [action-value function](https://en.wikipedia.org/w/index.php?title=Action-value_function "action-value function") that ultimately gives the expected utility of taking a given action in a given state and following the optimal policy thereafter.”
 
-**Steps** |   
+**Weekly** | **Steps**
 --- | ---
 **Week 1** | **Week 5**
-1. Create GitHub | 27. Add goal maximization to the experiment
-2. Create Readme | 28. Research reinforcement learning
-3. Create Git Ignore | 29. Incorporate reinforcement learning to the training model
-4. Create Folder Hierarchy | 30. Estimate time needed for experiment to execute
- | (if the amount of time needed for the experiment to execute is longer
-**Week 2** | than practical, reevaluate experiment to reduce the estimated time)
-5. Add Visual Boy Advance to Project | 31. Debug code with the smallest ranges possible to save time
-6. Add Pokemon Red/Blue ROM to Project | 32. Begin execution of experiment
-7. Create File for AI in Python | 
-8. Create Launch File | **Week 6**
-9. Send Screen of Visual Boy Advance as input to AI | 33. Evaluate findings of experiment
-10. Send commands from AI to Visual Boy Advance | 34. First outline of paper
-11. Add graph/chart output | 35. Add experiment to outline
-| 36. Add findings to outline
-**Week 3** | 37. Final research if needed
-12. Record emulator screen and audio for debugging | 38. Add research to outline
-13. Incorporate debug log file output | 39. Convert outline to rough draft
-14. Incorporate pickle to preserve neural network models | 40. Explain choices made for training parameters
-15. Research CNN layers | 41. Compare findings to research
-16. Create experiment with CNN layer(s) | 
-17. Research LSTM RNN layer(s) | **Week 7**
-18. Add LSTM RNN layer(s) to experiment | 42. Proofread/fix rough draft
- | 43. Add formatting to paper
-**Week 4** | 44. Add illustrations to paper
-19. Research fully connected layers | 45. Have someone Northwestern that is knowledgeable on Neural
-20. Add fully connected layer(s) to experiment | Networks proofread and/or edit the latest rough draft
-21. Research dropout layers | 46. Finalize research paper
-22. Add dropout layer(s) to experiment | 47. Self publish research paper to website
-23. Research Q-Learning | 
-24. Incorporate training with Q-Learning | 
-25. Identify and research hyper-parameters of the NN | 
-26. Incorporate hyper-parameters of the NN to the experiment | 
+~~1. Add Visual Boy Advance to Project~~ | 29. Research reinforcement learning
+~~2. Add Pokemon Red/Blue ROM to Project~~ | 30. Incorporate reinforcement learning to the training model
+~~3. Add Back-up game (Puzzle Bobble) ROM to Project~~ | 31. Estimate time needed for experiment to execute (if the amount of time needed for the experiment to execute is longer than practical, reevaluate experiment to reduce the estimated time)
+~~4. Create GitHub~~ | 32. Debug code with the smallest ranges possible to save time
+~~5. Create File for AI in Python~~ | 33. Begin execution of experiment
+~~6. Create .gitignore~~ | 
+~~7. Install Ubuntu 16.04 on Test laptop~~ | **Week 6**
+ | 34. Evaluate findings of experiment
+**Week 2** | 35. First outline of paper
+~~8. Create Readme for GitHub~~ | 36. Add experiment to outline
+9. Send Screen of VBA-M as input to AI | 37. Add findings to outline
+10. Send commands from AI to VBA-M | 38. Final research if needed
+11. Create Folder Hierarchy | 39. Add research to outline
+12. Create Launch File | 40. Convert outline to rough draft
+13. Record emulator screen and audio for debugging | 41. Explain choices made for training parameters
+14. Incorporate debug log file output | 42. Compare findings to research
+ | 
+**Week 3** | **Week 7**
+15. Add graph/chart output | 43. Proofread/fix rough draft
+16. Research CNN layers | 44. Add formatting & illustrations to paper
+17. Create experiment with CNN layer(s) | 45. Have someone Northwestern that is knowledgeable on NNs proofread and/or edit the latest rough draft
+18. Research LSTM RNN layer(s) | 46. Finalize research paper
+19. Add LSTM RNN layer(s) to experiment | 47. Self publish research paper to website
+20. Research fully connected layers | 
+21. Add fully connected layer(s) to experiment | 
+| 
+**Week 4** | 
+22. Research dropout layers | 
+23. Add dropout layer(s) to experiment | 
+24. Research Q-Learning | 
+25. Incorporate training with Q-Learning | 
+26. Identify and research hyper-parameters of the NN | 
+27. Incorporate hyper-parameters of the NN | 
+28. Add goal maximization to the experiment | 
