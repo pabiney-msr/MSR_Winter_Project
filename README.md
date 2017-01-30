@@ -48,37 +48,37 @@ Implement a neural network that is capable of playing [Pokémon Red/Blue](https:
 > “**Q-learning** is a model-free [reinforcement learning](https://en.wikipedia.org/wiki/Reinforcement_learning "reinforcement learning") technique. Specifically, Q-learning can be used to find an optimal action-selection policy for any given (finite) [Markov decision process](https://en.wikipedia.org/wiki/Markov_decision_process "Markov decision process") (MDP). It works by learning an [action-value function](https://en.wikipedia.org/w/index.php?title=Action-value_function "action-value function") that ultimately gives the expected utility of taking a given action in a given state and following the optimal policy thereafter.”
 
 ### Steps
-**Week 1** | **Week 5**
 --- | ---
+**Week 1** | **Week 5**
 1. Create GitHub | 27. Add goal maximization to the experiment
 2. Create Readme | 28. Research reinforcement learning
 3. Create Git Ignore | 29. Incorporate reinforcement learning to the training model
-4. Create Folder Hierarchy                                               | 30. Estimate time needed for experiment to execute
---- | (if the amount of time needed for the experiment to execute is longer
+4. Create Folder Hierarchy | 30. Estimate time needed for experiment to execute
+ | (if the amount of time needed for the experiment to execute is longer
 **Week 2** | than practical, reevaluate experiment to reduce the estimated time)
 5. Add Visual Boy Advance to Project | 31. Debug code with the smallest ranges possible to save time
 6. Add Pokemon Red/Blue ROM to Project | 32. Begin execution of experiment
-7. Create File for AI in Python | ---
+7. Create File for AI in Python | 
 8. Create Launch File | **Week 6**
 9. Send Screen of Visual Boy Advance as input to AI | 33. Evaluate findings of experiment
 10. Send commands from AI to Visual Boy Advance | 34. First outline of paper
 11. Add graph/chart output | 35. Add experiment to outline
----| 36. Add findings to outline
+| 36. Add findings to outline
 **Week 3** | 37. Final research if needed
 12. Record emulator screen and audio for debugging | 38. Add research to outline
 13. Incorporate debug log file output | 39. Convert outline to rough draft
 14. Incorporate pickle to preserve neural network models | 40. Explain choices made for training parameters
 15. Research CNN layers | 41. Compare findings to research
-16. Create experiment with CNN layer(s) | ---
+16. Create experiment with CNN layer(s) | 
 17. Research LSTM RNN layer(s) | **Week 7**
 18. Add LSTM RNN layer(s) to experiment | 42. Proofread/fix rough draft
-43. Add formatting to paper
+ | 43. Add formatting to paper
 **Week 4** | 44. Add illustrations to paper
 19. Research fully connected layers | 45. Have someone Northwestern that is knowledgeable on Neural
 20. Add fully connected layer(s) to experiment | Networks proofread and/or edit the latest rough draft
 21. Research dropout layers | 46. Finalize research paper
 22. Add dropout layer(s) to experiment | 47. Self publish research paper to website
-23. Research Q-Learning | ---
-24. Incorporate training with Q-Learning | ---
-25. Identify and research hyper-parameters of the NN | ---
-26. Incorporate hyper-parameters of the NN to the experiment             |                                                                          |
+23. Research Q-Learning | 
+24. Incorporate training with Q-Learning | 
+25. Identify and research hyper-parameters of the NN | 
+26. Incorporate hyper-parameters of the NN to the experiment | 
