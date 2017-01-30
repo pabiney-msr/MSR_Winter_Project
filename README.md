@@ -75,7 +75,7 @@ Implement a neural network that is capable of playing [Pokémon Red/Blue](https:
 19. Add LSTM RNN layer(s) to experiment | 46. Finalize research paper
 20. Research fully connected layers | 47. Self publish research paper to website
 21. Add fully connected layer(s) to experiment | 
-| 
+ | 
 **Week 4** | 
 22. Research dropout layers | 
 23. Add dropout layer(s) to experiment | 
