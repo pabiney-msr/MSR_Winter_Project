@@ -47,8 +47,7 @@ Implement a neural network that is capable of playing [Pokémon Red/Blue](https:
 ### [Q-learning](https://en.wikipedia.org/wiki/Q-learning "Q-learning")
 > “**Q-learning** is a model-free [reinforcement learning](https://en.wikipedia.org/wiki/Reinforcement_learning "reinforcement learning") technique. Specifically, Q-learning can be used to find an optimal action-selection policy for any given (finite) [Markov decision process](https://en.wikipedia.org/wiki/Markov_decision_process "Markov decision process") (MDP). It works by learning an [action-value function](https://en.wikipedia.org/w/index.php?title=Action-value_function "action-value function") that ultimately gives the expected utility of taking a given action in a given state and following the optimal policy thereafter.”
 
-### Steps
- | 
+**Steps** |   
 --- | ---
 **Week 1** | **Week 5**
 1. Create GitHub | 27. Add goal maximization to the experiment
