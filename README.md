@@ -52,28 +52,28 @@ Implement a neural network that is capable of playing [Pokémon Red/Blue](https:
 **Week 1** | **Week 5**
 ~~1. Add Visual Boy Advance to Project~~ | 29. Research reinforcement learning
 ~~2. Add Pokemon Red/Blue ROM to Project~~ | 30. Incorporate reinforcement learning to the training model
-~~3. Add Back-up game (Puzzle Bobble) ROM to Project~~ | 31. Estimate time needed for experiment to execute (if the amount of time needed for the experiment to execute is longer than practical, reevaluate experiment to reduce the estimated time)
-~~4. Create GitHub~~ | 32. Debug code with the smallest ranges possible to save time
-~~5. Create File for AI in Python~~ | 33. Begin execution of experiment
-~~6. Create .gitignore~~ | 
-~~7. Install Ubuntu 16.04 on Test laptop~~ | **Week 6**
- | 34. Evaluate findings of experiment
-**Week 2** | 35. First outline of paper
-~~8. Create Readme for GitHub~~ | 36. Add experiment to outline
-9. Send Screen of VBA-M as input to AI | 37. Add findings to outline
-10. Send commands from AI to VBA-M | 38. Final research if needed
-11. Create Folder Hierarchy | 39. Add research to outline
-12. Create Launch File | 40. Convert outline to rough draft
-13. Record emulator screen and audio for debugging | 41. Explain choices made for training parameters
-14. Incorporate debug log file output | 42. Compare findings to research
- | 
-**Week 3** | **Week 7**
-15. Add graph/chart output | 43. Proofread/fix rough draft
-16. Research CNN layers | 44. Add formatting & illustrations to paper
-17. Create experiment with CNN layer(s) | 45. Have someone Northwestern that is knowledgeable on NNs proofread and/or edit the latest rough draft
-18. Research LSTM RNN layer(s) | 46. Finalize research paper
-19. Add LSTM RNN layer(s) to experiment | 47. Self publish research paper to website
-20. Research fully connected layers | 
+~~3. Add Back-up game (Puzzle Bobble) ROM to Project~~ | 31. Estimate time needed for experiment to execute 
+~~4. Create GitHub~~ | (if the amount of time needed for the experiment to execute is longer than practical, reevaluate experiment to reduce the estimated time)32. Debug code with the smallest ranges possible
+~~5. Create File for AI in Python~~ |  to save time
+~~6. Create .gitignore~~ | 33. Begin execution of experiment
+~~7. Install Ubuntu 16.04 on Test laptop~~ | 
+ | **Week 6**
+**Week 2** | 34. Evaluate findings of experiment
+~~8. Create Readme for GitHub~~ | 35. First outline of paper
+9. Send Screen of VBA-M as input to AI | 36. Add experiment to outline
+10. Send commands from AI to VBA-M | 37. Add findings to outline
+11. Create Folder Hierarchy | 38. Final research if needed
+12. Create Launch File | 39. Add research to outline
+13. Record emulator screen and audio for debugging | 40. Convert outline to rough draft
+14. Incorporate debug log file output | 41. Explain choices made for training parameters
+ | 42. Compare findings to research
+**Week 3** | 
+15. Add graph/chart output | **Week 7**
+16. Research CNN layers | 43. Proofread/fix rough draft
+17. Create experiment with CNN layer(s) | 44. Add formatting & illustrations to paper
+18. Research LSTM RNN layer(s) | 45. Have someone Northwestern that is knowledgeable on NNs proofread and/or edit the latest rough draft
+19. Add LSTM RNN layer(s) to experiment | 46. Finalize research paper
+20. Research fully connected layers | 47. Self publish research paper to website
 21. Add fully connected layer(s) to experiment | 
 | 
 **Week 4** | 
