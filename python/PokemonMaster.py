@@ -2,8 +2,66 @@
 import tensorflow as tf
 import tflearn
 
+### random ###
 import random
+
+### numbers ###
 import numpy as np
+
+### screenshot ###
+import pyscreenshot
+
+### sleep ###
+import time
+
+### input ###
+from pykeyboard import PyKeyboard
+#Hack to make input work for both Python 2 and Python 3
+try:
+    input = raw_input
+except NameError:
+    pass
+
+#function to send commands
+def sendCommand(action, keyboard):
+    #convert action to key
+    if action == "A":
+        keyboard.press_key('w')
+        time.sleep(2)
+        keyboard.release_key('w')
+    elif action == "B":
+        keyboard.press_key('q')
+        time.sleep(2)
+        keyboard.release_key('q')
+    elif action == "SELECT":
+        keyboard.press_key(keyboard.backspace_key)
+        time.sleep(2)
+        keyboard.release_key(keyboard.backspace_key)
+    elif action == "START":
+        keyboard.press_key(keyboard.enter_key)
+        time.sleep(2)
+        keyboard.release_key(keyboard.enter_key)
+    elif action == "UP":
+        keyboard.press_key(keyboard.up_key)
+        time.sleep(2)
+        keyboard.release_key(keyboard.up_key)
+    elif action == "DOWN":
+        keyboard.press_key(keyboard.down_key)
+        time.sleep(2)
+        keyboard.release_key(keyboard.down_key)
+    elif action == "LEFT":
+        keyboard.press_key(keyboard.left_key)
+        time.sleep(2)
+        keyboard.release_key(keyboard.left_key)
+    elif action == "RIGHT":
+        keyboard.press_key(keyboard.right_key)
+        time.sleep(2)
+        keyboard.release_key(keyboard.right_key)
+
+def getScreen(bounding_box):
+    #im = pyscreenshot.grab(bbox=(10,10,510,510)) # X1,Y1,X2,Y2
+    im = pyscreenshot.grab(bounding_box) # X1,Y1,X2,Y2
+    return im
 
 def build_dqn(num_actions, action_repeat):
     """
@@ -187,6 +245,12 @@ def build_graph(num_actions):
 
 def main(_):
     with tf.Session() as tf_session:
+        #launch VBA-M in full screen always on top
+
+
+        #get keyboard instance
+        keyboard = PyKeyboard()
+
 		#configuration variables
 		testing = True
     	test_model_path = ""

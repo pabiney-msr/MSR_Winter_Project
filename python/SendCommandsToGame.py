@@ -14,21 +14,37 @@ except NameError:
 def sendCommand(action, keyboard):
     #convert action to key
     if action == "A":
-        keyboard.tap_key('w')
+        keyboard.press_key('w')
+        time.sleep(2)
+        keyboard.release_key('w')
     elif action == "B":
-        keyboard.tap_key('q')
+        keyboard.press_key('q')
+        time.sleep(2)
+        keyboard.release_key('q')
     elif action == "SELECT":
-        keyboard.tap_key(keyboard.backspace_key)
+        keyboard.press_key(keyboard.backspace_key)
+        time.sleep(2)
+        keyboard.release_key(keyboard.backspace_key)
     elif action == "START":
-        keyboard.tap_key(keyboard.enter_key)
+        keyboard.press_key(keyboard.enter_key)
+        time.sleep(2)
+        keyboard.release_key(keyboard.enter_key)
     elif action == "UP":
-        keyboard.tap_key(keyboard.up_key)
+        keyboard.press_key(keyboard.up_key)
+        time.sleep(2)
+        keyboard.release_key(keyboard.up_key)
     elif action == "DOWN":
-        keyboard.tap_key(keyboard.down_key)
+        keyboard.press_key(keyboard.down_key)
+        time.sleep(2)
+        keyboard.release_key(keyboard.down_key)
     elif action == "LEFT":
-        keyboard.tap_key(keyboard.left_key)
+        keyboard.press_key(keyboard.left_key)
+        time.sleep(2)
+        keyboard.release_key(keyboard.left_key)
     elif action == "RIGHT":
-        keyboard.tap_key(keyboard.right_key)
+        keyboard.press_key(keyboard.right_key)
+        time.sleep(2)
+        keyboard.release_key(keyboard.right_key)
 
 def main():
     #list of total commands

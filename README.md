@@ -60,12 +60,12 @@ Implement a neural network that is capable of playing [Pokémon Red/Blue](https:
  | **Week 6**
 **Week 2** | 34. Evaluate findings of experiment
 ~~8. Create Readme for GitHub~~ | 35. First outline of paper
-9. Send Screen of VBA-M as input to AI | 36. Add experiment to outline
-10. Send commands from AI to VBA-M | 37. Add findings to outline
-11. Create Folder Hierarchy | 38. Final research if needed
-12. Create Launch File | 39. Add research to outline
+~~9. Send Screen of VBA-M as input to AI~~ | 36. Add experiment to outline
+~~10. Send commands from AI to VBA-M~~ | 37. Add findings to outline
+11. List Dependencies | 38. Final research if needed
+12. Incorporate debug log file output | 39. Add research to outline
 13. Record emulator screen and audio for debugging | 40. Convert outline to rough draft
-14. Incorporate debug log file output | 41. Explain choices made for training parameters
+14. Create Launch File | 41. Explain choices made for training parameters
  | 42. Compare findings to research
 **Week 3** | 
 15. Add graph/chart output | **Week 7**
