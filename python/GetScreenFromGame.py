@@ -4,11 +4,15 @@ import pyscreenshot
 import time
 def main():
     #make timer
-    timer_original = 10
+    timer_original = 3
     timer = timer_original
     #loop until timer
     while timer >= 0:
-        im = pyscreenshot.grab(bbox=(10,10,510,510)) # X1,Y1,X2,Y2
+        screen_start_x = 955
+        screen_start_y = 50
+        frame_width = 480
+        frame_height = 435
+        im = pyscreenshot.grab(bbox=(screen_start_x, screen_start_y, screen_start_x+frame_width, screen_start_y+frame_height))
         im.show()
         time.sleep(2)
 

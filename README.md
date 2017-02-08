@@ -1,6 +1,4 @@
 # MSR_Winter_Project
-
-## Proposal
 ### Objective
 Implement a neural network that is capable of playing [Pokémon Red/Blue](https://en.wikipedia.org/wiki/Pokémon_Red_and_Blue "Pokémon Red/Blue") on the Nintendo GameBoy/GameBoy Color/GameBoy Advance emulator project known as [VisualBoyAdvance-M (VBA-M)](https://github.com/visualboyadvance-m/visualboyadvance-m "VisualBoyAdvance-M (VBA-M)").
 
@@ -22,6 +20,9 @@ Implement a neural network that is capable of playing [Pokémon Red/Blue](https:
 ### Fall Back Strategy
 * Choose a subset of levels.
 * Choose a different game (Puzzle-Bobble Millennium).
+
+### Dependencies
+
 
 ### [Pokémon Red/Blue](https://en.wikipedia.org/wiki/Pokémon_Red_and_Blue "Pokémon Red/Blue")
 > “The player controls the protagonist from an [overhead perspective](https://en.wikipedia.org/wiki/Top-down_perspective "overhead perspective") and navigates him throughout the fictional region of Kanto in a quest to master [Pokémon battling](https://en.wikipedia.org/wiki/Pokémon_battle "Pokémon battling"). The goal of the games is to become the champion of the Pokémon League by defeating the eight [Gym Leaders](https://en.wikipedia.org/wiki/Gym_Leaders "Gym Leaders") and then the top four Pokémon trainers in the land, the [Elite Four](https://en.wikipedia.org/wiki/Elite_Four "Elite Foure"). Another objective is to complete the [Pokédex](https://en.wikipedia.org/wiki/Pokédex "Pokédex"), an in-game encyclopedia, by obtaining the 150 available Pokémon. Red and Blue utilize the [Game Link Cable](https://en.wikipedia.org/wiki/Game_Link_Cable "Game Link Cable"), which connects two games together and allows Pokémon to be traded or battled between games. Both titles are independent of each other but feature the same plot, and while they can be played separately, it is necessary for players to trade among both games in order to obtain all of the first 150 Pokémon.”
@@ -62,25 +63,25 @@ Implement a neural network that is capable of playing [Pokémon Red/Blue](https:
 ~~8. Create Readme for GitHub~~ | 35. First outline of paper
 ~~9. Send Screen of VBA-M as input to AI~~ | 36. Add experiment to outline
 ~~10. Send commands from AI to VBA-M~~ | 37. Add findings to outline
-11. List Dependencies | 38. Final research if needed
-12. Incorporate debug log file output | 39. Add research to outline
-13. Record emulator screen and audio for debugging | 40. Convert outline to rough draft
-14. Create Launch File | 41. Explain choices made for training parameters
+~~11. Launch VBA-M through Python~~ | 38. Final research if needed
+~~12. Research CNN layers~~ | 39. Add research to outline
+~~13. Create experiment with CNN layer(s)~~ | 40. Convert outline to rough draft
+~~14. Research Q-Learning~~ | 41. Explain choices made for training parameters
  | 42. Compare findings to research
 **Week 3** | 
-15. Add graph/chart output | **Week 7**
-16. Research CNN layers | 43. Proofread/fix rough draft
-17. Create experiment with CNN layer(s) | 44. Add formatting & illustrations to paper
-18. Research LSTM RNN layer(s) | 45. Have someone Northwestern that is knowledgeable on NNs proofread and/or edit the latest rough draft
-19. Add LSTM RNN layer(s) to experiment | 46. Finalize research paper
-20. Research fully connected layers | 47. Self publish research paper to website
-21. Add fully connected layer(s) to experiment | 
+15. Incorporate training with Q-Learning | **Week 7**
+16. Research LSTM RNN layer(s) | 43. Proofread/fix rough draft
+~~17. Add LSTM RNN layer(s) to experiment~~ | 44. Add formatting & illustrations to paper
+18. Research fully connected layers | 45. Have someone Northwestern that is knowledgeable on NNs proofread and/or edit the latest rough draft
+~~19. Add fully connected layer(s) to experiment~~ | 46. Finalize research paper
+20. Incorporate debug log file output | 47. Self publish research paper to website
+21. List Dependencies | 
  | 
 **Week 4** | 
 22. Research dropout layers | 
 23. Add dropout layer(s) to experiment | 
-24. Research Q-Learning | 
-25. Incorporate training with Q-Learning | 
+24. Record emulator screen and audio for debugging | 
+25. Add graph/chart output | 
 26. Identify and research hyper-parameters of the NN | 
 27. Incorporate hyper-parameters of the NN | 
 28. Add goal maximization to the experiment | 

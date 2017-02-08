@@ -1,73 +1,156 @@
+"""
+Author: Patrick Abiney
+Last Revised: 02/07/2017
+GitHub: 
+
+Requirements:
+    - 
+References:
+    - 
+Links:
+    - 
+"""
+
+##########################################################################
+# Imports
+##########################################################################
 ### tensor flow ###
 import tensorflow as tf
+### tflearn helper library ###
 import tflearn
-
 ### random ###
 import random
-
 ### numbers ###
 import numpy as np
-
 ### screenshot ###
 import pyscreenshot
-
 ### sleep ###
 import time
-
 ### input ###
 from pykeyboard import PyKeyboard
-#Hack to make input work for both Python 2 and Python 3
+### Launch Enve ###
+import subprocess
+### Reset Env ###
+import os
+### Reset Env ###
+import signal
+##########################################################################
+
+##########################################################################
+# Compatability
+##########################################################################
 try:
     input = raw_input
 except NameError:
     pass
+try:
+    writer_summary = tf.summary.FileWriter
+    merge_all_summaries = tf.summary.merge_all
+    histogram_summary = tf.summary.histogram
+    scalar_summary = tf.summary.scalar
+except Exception:
+    writer_summary = tf.train.SummaryWriter
+    merge_all_summaries = tf.merge_all_summaries
+    histogram_summary = tf.histogram_summary
+    scalar_summary = tf.scalar_summary
 
-#function to send commands
-def sendCommand(action, keyboard):
+##########################################################################
+# Globals
+##########################################################################
+# Max training steps
+TMAX = 80000000
+# Current training step
+T = 0
+# Async gradient update frequency of each learning thread
+I_AsyncUpdate = 5
+# Timestep to reset the target network
+I_target = 40000
+# Learning rate
+learning_rate = 0.001
+# Reward discount rate
+gamma = 0.99
+# Actions
+actions = {"A", "B", "SELECT", "START", "UP", "DOWN", "LEFT", "RIGHT"}
+# Number of timesteps to anneal epsilon
+anneal_epsilon_timesteps = 400000
+# Durration to press a key for
+durration = 0.50
+# Screen Dimensions
+screen_start_x = 955
+screen_start_y = 50
+frame_width = 480
+frame_height = 435
+#get keyboard instance
+keyboard = PyKeyboard()
+# Path to VBA-M
+game_boy = "~/Desktop/visualboyadvance-m-master/build/visualboyadvance-m"
+# Path to ROM
+ROM = "~/Desktop/ROMs/Pokemon_Blue.gb"
+# PID (begins as -1)
+pid = -1
+##########################################################################
+
+##########################################################################
+#Function to close if open, then launch VBA-M and load ROM
+##########################################################################
+def reset_env():
+    global game_boy, ROM, pid
+    close_env()
+    pid = subprocess.call(game_boy + " " + ROM + " &", shell=True)
+##########################################################################
+
+##########################################################################
+#Function to close VBA-M if open
+##########################################################################
+def close_env():
+    global pid
+    if pid != -1:
+        os.kill(pid, signal.SIGUSR1)
+##########################################################################
+
+##########################################################################
+#Function to send commands
+##########################################################################
+def sendCommands(action):
+    global durration, keyboard
+    key = ''
     #convert action to key
     if action == "A":
-        keyboard.press_key('w')
-        time.sleep(2)
-        keyboard.release_key('w')
+        key = 'w'
     elif action == "B":
-        keyboard.press_key('q')
-        time.sleep(2)
-        keyboard.release_key('q')
+        key = 'q'
     elif action == "SELECT":
-        keyboard.press_key(keyboard.backspace_key)
-        time.sleep(2)
-        keyboard.release_key(keyboard.backspace_key)
+        key = keyboard.backspace_key
     elif action == "START":
-        keyboard.press_key(keyboard.enter_key)
-        time.sleep(2)
-        keyboard.release_key(keyboard.enter_key)
+        key = keyboard.enter_key
     elif action == "UP":
-        keyboard.press_key(keyboard.up_key)
-        time.sleep(2)
-        keyboard.release_key(keyboard.up_key)
+        key = keyboard.up_key
     elif action == "DOWN":
-        keyboard.press_key(keyboard.down_key)
-        time.sleep(2)
-        keyboard.release_key(keyboard.down_key)
+        key = keyboard.down_key
     elif action == "LEFT":
-        keyboard.press_key(keyboard.left_key)
-        time.sleep(2)
-        keyboard.release_key(keyboard.left_key)
+        key = keyboard.left_key
     elif action == "RIGHT":
-        keyboard.press_key(keyboard.right_key)
-        time.sleep(2)
-        keyboard.release_key(keyboard.right_key)
+        key = keyboard.right_key
+    keyboard.press_key(key)
+    time.sleep(durration)
+    keyboard.release_key(key)
+    keyboard.release_key(key) #release second time incase it stuck
+##########################################################################
 
-def getScreen(bounding_box):
-    #im = pyscreenshot.grab(bbox=(10,10,510,510)) # X1,Y1,X2,Y2
-    im = pyscreenshot.grab(bounding_box) # X1,Y1,X2,Y2
-    return im
+##########################################################################
+# Helper function to get the game screen
+##########################################################################
+def getScreen():
+    global screen_start_x, frame_height, screen_start_y, frame_width
+    return pyscreenshot.grab(bbox=(screen_start_x, screen_start_y, screen_start_x+frame_width, screen_start_y+frame_height))
+##########################################################################
 
-def build_dqn(num_actions, action_repeat):
-    """
-    Building a DQN.
-    """
-    inputs = tf.placeholder(tf.float32, [None, action_repeat, 84, 84])
+##########################################################################
+#Build a DQN
+##########################################################################
+def build_dqn(num_actions):
+    global frame_height, frame_width
+    inputs = tf.placeholder(tf.float32, [None, 0, frame_height, frame_width])
 
     # Inputs shape: [batch, channel, height, width] need to be changed into
     # shape [batch, height, width, channel]
@@ -77,27 +160,33 @@ def build_dqn(num_actions, action_repeat):
     net = tflearn.conv_2d(net, 32, 8, strides=4, activation='relu')
     net = tflearn.conv_2d(net, 64, 4, strides=2, activation='relu')
 
-    ## rnn lstm layers
-
-
-    ## fully connected layers
+    ## Fully connected layer
     net = tflearn.fully_connected(net, 256, activation='relu')
+
+    ## lstm layers go here
+    net = tflearn.lstm(net, 256, dropout=0.8, dynamic=True)
+
+    ## Output: fully connected layer
     q_values = tflearn.fully_connected(net, num_actions)
 
     ## return commands as output
     return q_values
+##########################################################################
 
+##########################################################################
+# Sample a final epsilon value to anneal towards from a distribution.
+# These values are specified in section 5.1 of http://arxiv.org/pdf/1602.01783v1.pdf
+##########################################################################
 def sample_final_epsilon():
-    """
-    Sample a final epsilon value to anneal towards from a distribution.
-    These values are specified in section 5.1 of http://arxiv.org/pdf/1602.01783v1.pdf
-    """
     final_epsilons = np.array([.1, .01, .5])
     probabilities = np.array([0.4, 0.3, 0.3])
     return np.random.choice(final_epsilons, 1, p=list(probabilities))[0]
+##########################################################################
 
-
-def learner_thread(thread_id, env, session, graph_ops, num_actions, summary_ops, saver):
+##########################################################################
+# Learner Function
+##########################################################################
+def learner(iter_count, session, graph_ops, actions, num_actions, summary_ops, saver):
     global TMAX, T
 
     # Unpack graph ops
@@ -112,9 +201,6 @@ def learner_thread(thread_id, env, session, graph_ops, num_actions, summary_ops,
 
     summary_placeholders, assign_ops, summary_op = summary_ops
 
-    # Wrap env with AtariEnvironment helper class
-    env = 
-
     # Initialize network gradients
     s_batch = []
     a_batch = []
@@ -124,19 +210,18 @@ def learner_thread(thread_id, env, session, graph_ops, num_actions, summary_ops,
     initial_epsilon = 1.0
     epsilon = 1.0
 
-    print("Thread " + str(thread_id) + " - Final epsilon: " + str(final_epsilon))
+    print("Final epsilon: " + str(final_epsilon))
 
     time.sleep(3*thread_id)
     t = 0
     while T < TMAX:
-        # Get initial game observation
-        s_t = env.get_initial_state()
-        terminal = False
-
         # Set up per-episode counters
         ep_reward = 0
         episode_ave_max_q = 0
         ep_t = 0
+
+        # Get the screen
+        s_t = getScreen()
 
         while True:
             # Forward the deep q network, get Q(s,a) values
@@ -151,23 +236,19 @@ def learner_thread(thread_id, env, session, graph_ops, num_actions, summary_ops,
             if epsilon > final_epsilon:
                 epsilon -= (initial_epsilon - final_epsilon) / anneal_epsilon_timesteps
 
-            # Gym excecutes action in game environment on behalf of actor-learner
-            s_t1, r_t, terminal, info = env.step(action_index)
+            # Send generated commands
+
+            # Update env variables
 
             # Accumulate gradients
-            readout_j1 = target_q_values.eval(session = session,
-                                              feed_dict = {st : [s_t1]})
+            readout_j1 = target_q_values.eval(session=session, feed_dict={st: [s_t1]})
             clipped_r_t = np.clip(r_t, -1, 1)
-            if terminal:
-                y_batch.append(clipped_r_t)
-            else:
-                y_batch.append(clipped_r_t + gamma * np.max(readout_j1))
+            y_batch.append(clipped_r_t if terminal else clipped_r_t+gamma*np.max(readout_j1))
 
             a_batch.append(a_t)
             s_batch.append(s_t)
 
-            # Update the state and counters
-            s_t = s_t1
+            # Update the counters
             T += 1
             t += 1
 
@@ -188,39 +269,91 @@ def learner_thread(thread_id, env, session, graph_ops, num_actions, summary_ops,
                 stats = [ep_reward, episode_ave_max_q/float(ep_t), epsilon]
                 for i in range(len(stats)):
                     session.run(assign_ops[i], {summary_placeholders[i]: float(stats[i])})
-                print("| Thread %.2i" % int(thread_id), "| Step", t,
-                      "| Reward: %.2i" % int(ep_reward), " Qmax: %.4f" %
-                      (episode_ave_max_q/float(ep_t)),
-                      " Epsilon: %.5f" % epsilon, " Epsilon progress: %.6f" %
-                      (t/float(anneal_epsilon_timesteps)))
+                print("| Iteration", iter_count, "| Step", t, "| Reward: %.2i" % int(ep_reward), " Qmax: %.4f" % (episode_ave_max_q/float(ep_t)), " Epsilon: %.5f" % epsilon, " Epsilon progress: %.6f" % (t/float(anneal_epsilon_timesteps)))
                 break
+##########################################################################
 
+##########################################################################
+# Train a model.
+##########################################################################
+def train(session, saver, test_model_path, actions):
+    summary_ops = build_summaries()
+    summary_op = summary_ops[-1]
 
-def train(tf_session, tf_saver, test_model_path, actions):
-    """
-    Train a model.
-    """
-    tf_saver.restore(tf_session, test_model_path)
+    # Initialize variables
+    session.run(tf.initialize_all_variables())
+    writer = writer_summary(summary_dir + "/qlearning", session.graph)
 
+    # Initialize target network weights
+    session.run(graph_ops["reset_target_network_params"])
 
+    for iter_count in range(0, 20):
+        # lerner function
+        learner(iter_count, session, graph_ops, actions, num_actions, summary_ops, saver)
 
+        # reset env for next iteration
+        env_reset()
 
-def evaluate(tf_session, tf_saver, test_model_path, actions):
-    """
-    Evaluate a model.
-    """
-    tf_saver.restore(tf_session, test_model_path)
+        # wait a bit
+        time.sleep(0.01)
 
+    # Show the agents training and write summary statistics
+    last_summary_time = 0
+    while True:
+        now = time.time()
+        if now - last_summary_time > summary_interval:
+            summary_str = session.run(summary_op)
+            writer.add_summary(summary_str, float(T))
+            last_summary_time = now
+##########################################################################
 
+##########################################################################
+# Evaluate a model.
+##########################################################################
+def evaluate(session, saver, test_model_path, actions):
+    saver.restore(session, test_model_path)
+    print("Restored model weights from ", test_model_path)
 
-def build_graph(num_actions):
+    # reset env
+    env_reset()
+
+    # Unpack graph ops
+    s = graph_ops["s"]
+    q_values = graph_ops["q_values"]
+
+    for i_episode in xrange(num_eval_episodes):
+        s_t = getScreen()
+        ep_reward = 0
+        while True:
+            # get commands from session
+            readout_t = q_values.eval(session=session, feed_dict={s: [s_t]})
+            action_index = np.argmax(readout_t)
+
+            # send commands to game
+            sendCommands(action_index)
+
+            # update variables
+            s_t1 = getScreen()
+            r_t = 
+            s_t = s_t1
+            ep_reward += r_t
+
+            #condition to exit infinite loop goes here
+
+        print(ep_reward)
+##########################################################################
+
+##########################################################################
+# Build Graph
+##########################################################################
+def build_graph(num_actions, frame_height, frame_width):
     # Create shared deep q network
-    s, q_network = build_dqn(num_actions=num_actions, action_repeat=action_repeat)
+    s, q_network = build_dqn(num_actions, frame_height, frame_width)
     network_params = tf.trainable_variables()
     q_values = q_network
 
     # Create shared target network
-    st, target_q_network = build_dqn(num_actions=num_actions, action_repeat=action_repeat)
+    st, target_q_network = build_dqn(num_actions, frame_height, frame_width)
     target_network_params = tf.trainable_variables()[len(network_params):]
     target_q_values = target_q_network
 
@@ -240,31 +373,35 @@ def build_graph(num_actions):
                  "a": a,
                  "y": y,
                  "grad_update": grad_update}
-
+                 
     return graph_ops
+##########################################################################
 
-def main(_):
+##########################################################################
+# Main Function
+##########################################################################
+def main():
     with tf.Session() as tf_session:
-        #launch VBA-M in full screen always on top
-
-
-        #get keyboard instance
-        keyboard = PyKeyboard()
-
-		#configuration variables
-		testing = True
-    	test_model_path = ""
-    	actions = {"A", "B", "SELECT", "START", "UP", "DOWN", "LEFT", "RIGHT"}
+        #configuration variables
+        testing = True
+        test_model_path = ""
         num_actions = actions.size
         graph_ops = build_graph(num_actions)
 
         #saver for model
-    	tf_saver = tf.train.Saver(max_to_keep=5)
+        tf_saver = tf.train.Saver(max_to_keep=5)
 
         if testing:
-            evaluate(tf_session, tf_saver, test_model_path, actions, )
+            evaluate(tf_session, tf_saver, test_model_path, actions)
         else:
-            train(tf_session, tf_saver, test_model_path, actions, )
+            train(   tf_session, tf_saver, test_model_path, actions)
+    # exit application
+    close_env()
+##########################################################################
 
+##########################################################################
+# Entry Point
+##########################################################################
 if __name__ == "__main__":
     tf.app.run()
+##########################################################################
