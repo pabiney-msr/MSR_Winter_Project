@@ -9,8 +9,7 @@ Implement a neural network that is capable of playing [Pokémon Red/Blue](https:
 
 ### Neural Network Strategy
 * Possible layers that will be incorporated are [Long Short Term Memory (LSTM)](https://en.wikipedia.org/wiki/Long_short-term_memory "Long Short Term Memory (LSTM)"), [Recurrent Neural Network (RNN)](https://en.wikipedia.org/wiki/Recurrent_neural_network "Recurrent Neural Network (RNN)"), [Convolutional Neural Network (CNN)](https://en.wikipedia.org/wiki/Convolutional_neural_network "Convolutional Neural Network (CNN)"), etc.
-* Possible training through [Q-learning](https://en.wikipedia.org/wiki/Q-learning "Q-learning") and [reinforcement learning](https://en.wikipedia.org/wiki/Reinforcement_learning "reinforcement learning").
-* Possible optimization goals may include score, wins, badges, Pokémon level, etc.
+* Possible training through [reinforcement learning](https://en.wikipedia.org/wiki/Reinforcement_learning "reinforcement learning").
 
 ### Stretch Goals
 * Expand the neural network to use multiple emulators at the same time.
@@ -45,43 +44,30 @@ Implement a neural network that is capable of playing [Pokémon Red/Blue](https:
 ### [Long Short Term Memory (LSTM)](https://en.wikipedia.org/wiki/Long_short-term_memory "Long Short Term Memory (LSTM)")
 > “Like most RNNs, an LSTM network is [universal](https://en.wikipedia.org/wiki/Turing_completeness "universl") in the sense that given enough network units it can compute anything a conventional computer can compute, provided it has the proper [weight](https://en.wikipedia.org/wiki/Weight "weight") [matrix](https://en.wikipedia.org/wiki/Matrix_(mathematics) "matrix"), which may be viewed as its program. Unlike traditional RNNs, an LSTM network is well-suited to learn from experience to [classify](https://en.wikipedia.org/wiki/Classification_in_machine_learning "classify"), [process](https://en.wikipedia.org/wiki/Computer_data_processing "process") and [predict](https://en.wikipedia.org/wiki/Predict "predict") [time series](https://en.wikipedia.org/wiki/Time_series "time series") when there are very long time lags of unknown size between important events.”
 
-### [Q-learning](https://en.wikipedia.org/wiki/Q-learning "Q-learning")
-> “**Q-learning** is a model-free [reinforcement learning](https://en.wikipedia.org/wiki/Reinforcement_learning "reinforcement learning") technique. Specifically, Q-learning can be used to find an optimal action-selection policy for any given (finite) [Markov decision process](https://en.wikipedia.org/wiki/Markov_decision_process "Markov decision process") (MDP). It works by learning an [action-value function](https://en.wikipedia.org/w/index.php?title=Action-value_function "action-value function") that ultimately gives the expected utility of taking a given action in a given state and following the optimal policy thereafter.”
-
 **Weekly** | **Steps**
 --- | ---
 **Week 1** | **Week 5**
-~~1. Add Visual Boy Advance to Project~~ | 29. Research reinforcement learning
-~~2. Add Pokemon Red/Blue ROM to Project~~ | 30. Incorporate reinforcement learning to the training model
-~~3. Add Back-up game (Puzzle Bobble) ROM to Project~~ | 31. Estimate time needed for experiment to execute 
-~~4. Create GitHub~~ | (if the amount of time needed for the experiment to execute is longer than practical, reevaluate experiment to reduce the estimated time)
-~~5. Create File for AI in Python~~ | 32. Debug code with the smallest ranges possible to save time
-~~6. Create .gitignore~~ | 33. Begin execution of experiment
-~~7. Install Ubuntu 16.04 on Test laptop~~ | 
- | **Week 6**
-**Week 2** | 34. Evaluate findings of experiment
-~~8. Create Readme for GitHub~~ | 35. First outline of paper
-~~9. Send Screen of VBA-M as input to AI~~ | 36. Add experiment to outline
-~~10. Send commands from AI to VBA-M~~ | 37. Add findings to outline
-~~11. Launch VBA-M through Python~~ | 38. Final research if needed
-~~12. Research CNN layers~~ | 39. Add research to outline
-~~13. Create experiment with CNN layer(s)~~ | 40. Convert outline to rough draft
-~~14. Research Q-Learning~~ | 41. Explain choices made for training parameters
- | 42. Compare findings to research
-**Week 3** | 
-15. Incorporate training with Q-Learning | **Week 7**
-16. Research LSTM RNN layer(s) | 43. Proofread/fix rough draft
-~~17. Add LSTM RNN layer(s) to experiment~~ | 44. Add formatting & illustrations to paper
-18. Research fully connected layers | 45. Have someone Northwestern that is knowledgeable on NNs proofread and/or edit the latest rough draft
-~~19. Add fully connected layer(s) to experiment~~ | 46. Finalize research paper
-20. Incorporate debug log file output | 47. Self publish research paper to website
-21. List Dependencies | 
+~~1. Add Visual Boy Advance to Project~~ | 21. Research LSTM RNN layer(s)
+~~2. Add Pokemon Red/Blue ROM to Project~~ | 22. Add LSTM RNN layer(s) to experiment
+~~3. Add Back-up game (Puzzle Bobble) ROM to Project~~ | 23. Identify and research hyper-parameters of the NN
+~~4. Create GitHub~~ | 24. Incorporate hyper-parameters of the NN
+~~5. Create File for AI in Python~~ | 25. Debug code with the smallest ranges possible to save time
+~~6. Create .gitignore~~ | 26. Estimate time needed for experiment to execute
+~~7. Install Ubuntu 16.04 on Test laptop~~ | 27. Begin execution of experiment
  | 
-**Week 4** | 
-22. Research dropout layers | 
-23. Add dropout layer(s) to experiment | 
-24. Record emulator screen and audio for debugging | 
-25. Add graph/chart output | 
-26. Identify and research hyper-parameters of the NN | 
-27. Incorporate hyper-parameters of the NN | 
-28. Add goal maximization to the experiment | 
+**Week 2** | **Week 6**
+~~8. Create Readme for GitHub~~ | 28. Evaluate findings of experiment
+~~9. Send Screen of VBA-M as input to AI~~ | 29. First outline of paper
+~~10. Send commands from AI to VBA-M~~ | 30. Add experiment to outline
+~~11. Launch VBA-M through Python~~ | 31. Add research to outline
+~~12. Research CNN layers~~ | 32. Add findings to outline
+~~13. Create experiment with CNN layer(s)~~ | 33. Convert outline to rough draft
+~~14. Add fully connected layer(s) to experiment~~ | 34. Explain choices made for training parameters
+ | 35. Compare findings to research
+**Week 3-4** | 
+~~15. Research fully connected layers~~ | **Week 7**
+~~16. Incorporate debug log file output~~ | 36. Proofread/fix rough draft
+~~17. Add graph/chart output~~ | 37. Add formatting & illustrations to paper
+~~18. Create SampleGather.py~~ | 38. Have someone Northwestern that is knowledgeable on NNs proofread and/or edit the latest rough draft
+19. Research TensorFlow and GPU | 39. Finalize research paper
+20. List Dependencies | 40. Self publish research paper to website

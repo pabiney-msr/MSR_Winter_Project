@@ -1,6 +1,6 @@
 """
 Author: Patrick Abiney
-Last Revised: 02/07/2017
+Last Revised: 02/28/2017
 GitHub: 
 
 Requirements:
@@ -24,6 +24,7 @@ import random
 import numpy as np
 ### screenshot ###
 import pyscreenshot
+from PIL import Image
 ### sleep ###
 import time
 ### input ###
@@ -34,6 +35,8 @@ import subprocess
 import os
 ### Reset Env ###
 import signal
+### plotting ###
+import matplotlib.pyplot as plt
 ##########################################################################
 
 ##########################################################################
@@ -57,24 +60,9 @@ except Exception:
 ##########################################################################
 # Globals
 ##########################################################################
-# Max training steps
-TMAX = 80000000
-# Current training step
-T = 0
-# Async gradient update frequency of each learning thread
-I_AsyncUpdate = 5
-# Timestep to reset the target network
-I_target = 40000
-# Learning rate
-learning_rate = 0.001
-# Reward discount rate
-gamma = 0.99
-# Actions
-actions = {"A", "B", "SELECT", "START", "UP", "DOWN", "LEFT", "RIGHT"}
-# Number of timesteps to anneal epsilon
-anneal_epsilon_timesteps = 400000
 # Durration to press a key for
 durration = 0.50
+thresh = 0.50
 # Screen Dimensions
 screen_start_x = 955
 screen_start_y = 50
@@ -82,12 +70,23 @@ frame_width = 480
 frame_height = 435
 #get keyboard instance
 keyboard = PyKeyboard()
+# Actions
+actions = ['w', 'q', keyboard.backspace_key, keyboard.enter_key, keyboard.up_key, keyboard.down_key, keyboard.left_key, keyboard.right_key]
+num_actions = len(actions)
 # Path to VBA-M
 game_boy = "~/Desktop/visualboyadvance-m-master/build/visualboyadvance-m"
 # Path to ROM
 ROM = "~/Desktop/ROMs/Pokemon_Blue.gb"
 # PID (begins as -1)
 pid = -1
+# Path to test model
+test_model_path = "../TestModelSaves/"
+# model_number
+model_number = 0
+# training path
+training_path = "../Samples/"
+# stats path
+stats_path = "../Stats/"
 ##########################################################################
 
 ##########################################################################
@@ -111,30 +110,52 @@ def close_env():
 ##########################################################################
 #Function to send commands
 ##########################################################################
-def sendCommands(action):
-    global durration, keyboard
-    key = ''
-    #convert action to key
-    if action == "A":
-        key = 'w'
-    elif action == "B":
-        key = 'q'
-    elif action == "SELECT":
-        key = keyboard.backspace_key
-    elif action == "START":
-        key = keyboard.enter_key
-    elif action == "UP":
-        key = keyboard.up_key
-    elif action == "DOWN":
-        key = keyboard.down_key
-    elif action == "LEFT":
-        key = keyboard.left_key
-    elif action == "RIGHT":
-        key = keyboard.right_key
-    keyboard.press_key(key)
-    time.sleep(durration)
-    keyboard.release_key(key)
-    keyboard.release_key(key) #release second time incase it stuck
+def sendCommands(weighted_actions):
+    global durration, keyboard, actions, num_actions, thresh
+    print(weighted_actions[0])
+    all_zero = True
+    # subtract thresh from weight of each, then clamp to >= 0.0
+    for i in range(0, num_actions):
+        weighted_actions[0][i] -= thresh
+        if weighted_actions[0][i] <= 0.0:
+            weighted_actions[0][i] = 0.0
+        else:
+            all_zero = False
+    # return if all_zero is still true, that means we aren't doing anything this cycle
+    if all_zero:
+        print("Pressed Nothing")
+        time.sleep(durration)
+        return
+    # check which has the highest weight
+    highest_index = np.argmax(weighted_actions[0])
+    # convert command
+    key = actions[highest_index]
+    # if a direction and if "B" was also pressed
+    if highest_index > 3 and weighted_actions[0][1] > 0.0:
+        #print 
+        print("Pressed 1 and " + str(highest_index))
+        # Press "B"
+        keyboard.press_key(actions[1])
+        # Press direction
+        keyboard.press_key(key)
+        # Sleep for durration
+        time.sleep(durration)
+        # Release direction
+        keyboard.release_key(key)
+        keyboard.release_key(key)
+        # Release "B"
+        keyboard.release_key(actions[1])
+        keyboard.release_key(actions[1])
+    else:
+        print("Pressed " + str(highest_index))
+        # press single key
+        keyboard.press_key(key)
+        # sleep for durration
+        time.sleep(durration)
+        # release key
+        keyboard.release_key(key)
+        #release second time incase it stuck
+        keyboard.release_key(key)
 ##########################################################################
 
 ##########################################################################
@@ -142,19 +163,176 @@ def sendCommands(action):
 ##########################################################################
 def getScreen():
     global screen_start_x, frame_height, screen_start_y, frame_width
-    return pyscreenshot.grab(bbox=(screen_start_x, screen_start_y, screen_start_x+frame_width, screen_start_y+frame_height))
+    im = pyscreenshot.grab(bbox=(screen_start_x, screen_start_y, screen_start_x+frame_width, screen_start_y+frame_height)).convert("L")
+    output = np.ones((1, frame_height), dtype=np.uint8)
+    pix = np.asarray(im)
+    return output[:, pix]
 ##########################################################################
 
 ##########################################################################
-#Build a DQN
+#Function to save graphs
 ##########################################################################
-def build_dqn(num_actions):
-    global frame_height, frame_width
-    inputs = tf.placeholder(tf.float32, [None, 0, frame_height, frame_width])
+def save_graphs(error_list):
+    global stats_path
+    if not os.path.exists(os.path.dirname(stats_path)):
+        try:
+            os.makedirs(os.path.dirname(stats_path))
+        except OSError as exc: # Guard against race condition
+            if exc.errno != errno.EEXIST:
+                raise
+    #generate global bar graph of performance
+    plt.figure()
+    index = np.arange(len(error_list))
+    bar_width = 0.35
+    #plot error
+    plt.bar(index, error_list, bar_width, color='b', label='Iteration')
+    #legend
+    plt.legend()
+    #save plot
+    plt.savefig(stats_path + "iteration_compare.png")
+
+##########################################################################
+
+##########################################################################
+#Function to save statistics
+##########################################################################
+def save_statistics(stats):
+    global stats_path
+    if not os.path.exists(os.path.dirname(stats_path)):
+        try:
+            os.makedirs(os.path.dirname(stats_path))
+        except OSError as exc: # Guard against race condition
+            if exc.errno != errno.EEXIST:
+                raise
+    open(stats_path + "stats.text", 'a').close()
+    with open(stats_path + "stats.text", 'a') as file:
+        file.write(str(stats) + '\n')
+    file.close()
+
+##########################################################################
+
+##########################################################################
+#Function to load the training and testing sets
+##########################################################################
+def load_sets():
+    global training_path, frame_height, num_actions
+    path_list = []
+
+    if not os.path.exists(os.path.dirname(training_path)):
+        try:
+            os.makedirs(os.path.dirname(training_path))
+        except OSError as exc: # Guard against race condition
+            if exc.errno != errno.EEXIST:
+                raise
+    #open training path
+    #print("Opening Training Path: " + str(training_path) + "master_train.txt")
+    open(training_path + "master_train.txt", 'a').close()
+    with open(training_path + "master_train.txt", 'r+') as f:
+        read_data = f.read()
+        #parse master file for each dir to look in
+        while read_data != "":
+            path_list.append(read_data[0:read_data.find('\n')])
+            read_data = read_data[read_data.find('\n')+1:]
+    f.close()
+    
+    #loop through each dir in order 0-n
+    #print("Loop through each dir in order 0-n")
+    setX = []#images formatted to be input
+    setY = [] #labels formatted to be output
+    size = len(path_list)
+    #print(path_list)
+    for i in range(0, size):
+        curr_path = path_list[i]
+        with open(curr_path + "labels.txt", 'r+') as f:
+            read_data = f.read()
+            j = 0
+            output = np.ones((1, frame_height), dtype=np.uint8)
+            line_list = []
+            #print("Making Line List")
+            while read_data != "":
+                line_list.append(read_data[0:read_data.find('\n')])
+                read_data = read_data[read_data.find('\n')+1:]
+            #print("Done making line list")
+            tmpX = []
+            tmpY = []
+
+            for line in line_list:                #load labels
+                #print(line)
+                space_index = line.find(' ')
+                label1 = line[:space_index]
+                labelB = line[space_index+1:line.find('\n')-1]
+                action_array = np.zeros(num_actions)
+                if labelB == 'b':
+                    action_array[1] = 1.0
+
+                if label1 == 'a':
+                    action_array[0] = 1.0
+                elif label1 == 'select':
+                    action_array[2] = 1.0
+                elif label1 == 'start':
+                    action_array[3] = 1.0
+                elif label1 == 'up':
+                    action_array[4] = 1.0
+                elif label1 == 'down':
+                    action_array[5] = 1.0
+                elif label1 == 'left':
+                    action_array[6] = 1.0
+                elif label1 == 'right':
+                    action_array[7] = 1.0
+
+                tmpY.append(action_array)
+                #load images
+                im = Image.open(curr_path + str(j) + ".png")
+                pix = np.asarray(im)
+                tmpX.append(output[:, pix])
+                j += 1
+            setX.append(tmpX)
+            setY.append(tmpY)
+    #print("done loading")
+    return setX, setY
+##########################################################################
+
+##########################################################################
+#Function to calculate error
+##########################################################################
+def calculate_error(key, pred):
+    global thresh
+    size = len(key)
+    if size > len(pred):
+        size = len(pred)
+    wrong_count = 0.0
+    for i in range(0, size):
+        # check B value
+        key_B = key[i][1]
+        pred_B = pred[i][1]
+        if (key_B >= thresh and pred_B < thresh) or (key_B < thresh and pred_B >= thresh):
+            # the value for B was wrong!
+            wrong_count += 1.0
+        else:
+            #check other values
+            key_highest = 0
+            pred_highest = 0
+            for j in range(2, 8):
+                if key[i][j] > key[i][key_highest] and key[i][j] > thresh:
+                    key_highest = j
+                if pred[i][j] > pred[i][pred_highest] and pred[i][j] > thresh:
+                    pred_highest = j
+            if key_highest != pred_highest:
+                # the key pressed was wrong!
+                wrong_count += 1.0
+    return (wrong_count/(size))*100.0 #percent wrong
+##########################################################################
+
+##########################################################################
+#Build network
+##########################################################################
+def build_network():
+    global num_actions, frame_height, frame_width
+    net = tflearn.input_data(shape=[None, 1, frame_height, frame_width])
 
     # Inputs shape: [batch, channel, height, width] need to be changed into
     # shape [batch, height, width, channel]
-    net = tf.transpose(inputs, [0, 2, 3, 1])
+    net = tf.transpose(net, [0, 2, 3, 1])
 
     ## 2d conv layers
     net = tflearn.conv_2d(net, 32, 8, strides=4, activation='relu')
@@ -163,218 +341,102 @@ def build_dqn(num_actions):
     ## Fully connected layer
     net = tflearn.fully_connected(net, 256, activation='relu')
 
-    ## lstm layers go here
-    net = tflearn.lstm(net, 256, dropout=0.8, dynamic=True)
+    ## lstm layers
+    #net = tf.reshape([1, net], shape=[1, 2, 0])
+    #net = tflearn.lstm(net, 256, dropout=0.8)
 
-    ## Output: fully connected layer
-    q_values = tflearn.fully_connected(net, num_actions)
+    net = tflearn.fully_connected(net, num_actions)
 
-    ## return commands as output
-    return q_values
-##########################################################################
+    net = tflearn.regression(net)
 
-##########################################################################
-# Sample a final epsilon value to anneal towards from a distribution.
-# These values are specified in section 5.1 of http://arxiv.org/pdf/1602.01783v1.pdf
-##########################################################################
-def sample_final_epsilon():
-    final_epsilons = np.array([.1, .01, .5])
-    probabilities = np.array([0.4, 0.3, 0.3])
-    return np.random.choice(final_epsilons, 1, p=list(probabilities))[0]
-##########################################################################
-
-##########################################################################
-# Learner Function
-##########################################################################
-def learner(iter_count, session, graph_ops, actions, num_actions, summary_ops, saver):
-    global TMAX, T
-
-    # Unpack graph ops
-    s = graph_ops["s"]
-    q_values = graph_ops["q_values"]
-    st = graph_ops["st"]
-    target_q_values = graph_ops["target_q_values"]
-    reset_target_network_params = graph_ops["reset_target_network_params"]
-    a = graph_ops["a"]
-    y = graph_ops["y"]
-    grad_update = graph_ops["grad_update"]
-
-    summary_placeholders, assign_ops, summary_op = summary_ops
-
-    # Initialize network gradients
-    s_batch = []
-    a_batch = []
-    y_batch = []
-
-    final_epsilon = sample_final_epsilon()
-    initial_epsilon = 1.0
-    epsilon = 1.0
-
-    print("Final epsilon: " + str(final_epsilon))
-
-    time.sleep(3*thread_id)
-    t = 0
-    while T < TMAX:
-        # Set up per-episode counters
-        ep_reward = 0
-        episode_ave_max_q = 0
-        ep_t = 0
-
-        # Get the screen
-        s_t = getScreen()
-
-        while True:
-            # Forward the deep q network, get Q(s,a) values
-            readout_t = q_values.eval(session=session, feed_dict={s: [s_t]})
-
-            # Choose next action based on e-greedy policy
-            a_t = np.zeros([num_actions])
-            action_index = random.randrange(num_actions) if random.random() <= epsilon else np.argmax(readout_t)
-            a_t[action_index] = 1
-
-            # Scale down epsilon
-            if epsilon > final_epsilon:
-                epsilon -= (initial_epsilon - final_epsilon) / anneal_epsilon_timesteps
-
-            # Send generated commands
-
-            # Update env variables
-
-            # Accumulate gradients
-            readout_j1 = target_q_values.eval(session=session, feed_dict={st: [s_t1]})
-            clipped_r_t = np.clip(r_t, -1, 1)
-            y_batch.append(clipped_r_t if terminal else clipped_r_t+gamma*np.max(readout_j1))
-
-            a_batch.append(a_t)
-            s_batch.append(s_t)
-
-            # Update the counters
-            T += 1
-            t += 1
-
-            ep_t += 1
-            ep_reward += r_t
-            episode_ave_max_q += np.max(readout_t)
-
-            # Optionally update target network
-            if T % I_target == 0:
-                session.run(reset_target_network_params)
-
-            # Save model progress
-            if t % checkpoint_interval == 0:
-                saver.save(session, "qlearning.ckpt", global_step=t)
-
-            # Print end of episode stats
-            if terminal:
-                stats = [ep_reward, episode_ave_max_q/float(ep_t), epsilon]
-                for i in range(len(stats)):
-                    session.run(assign_ops[i], {summary_placeholders[i]: float(stats[i])})
-                print("| Iteration", iter_count, "| Step", t, "| Reward: %.2i" % int(ep_reward), " Qmax: %.4f" % (episode_ave_max_q/float(ep_t)), " Epsilon: %.5f" % epsilon, " Epsilon progress: %.6f" % (t/float(anneal_epsilon_timesteps)))
-                break
+    ## return empty inputs and commands as output
+    return net
 ##########################################################################
 
 ##########################################################################
 # Train a model.
 ##########################################################################
-def train(session, saver, test_model_path, actions):
-    summary_ops = build_summaries()
-    summary_op = summary_ops[-1]
-
+def train():
+    global actions, test_model_path
     # Initialize variables
-    session.run(tf.initialize_all_variables())
-    writer = writer_summary(summary_dir + "/qlearning", session.graph)
+    network = build_network()
+    #load saved training info here
+    setX, setY = load_sets()
+    num_set = len(setX)
+    #error percent list
+    error_list = []
 
-    # Initialize target network weights
-    session.run(graph_ops["reset_target_network_params"])
+    for i in range(0, num_set):
+        #print("Training " + str(i))
+        model = tflearn.DNN(network, tensorboard_verbose=0)
+        #print("Fit")
+        #print(setY[i])
+        #print(setY[num_set-i-1])
+        trainX = []
+        trainY = []
+        testX  = []
+        testY  = []
 
-    for iter_count in range(0, 20):
-        # lerner function
-        learner(iter_count, session, graph_ops, actions, num_actions, summary_ops, saver)
+        length = len(setY[i])
+        percent = .95
+        portion = length * percent
+        for j in range(0, length):
+            #if over percent remainin
+            if (length-j-1) <= portion and len(trainX) <= portion:
+                #add to train
+                trainX.append(setX[i][j])
+                trainY.append(setY[i][j])
+            else:
+                if random.randrange(0, 100) <= 50 and len(trainX) <= portion:
+                    #add to train
+                    trainX.append(setX[i][j])
+                    trainY.append(setY[i][j])
+                else:
+                    #add to test
+                    testX.append(setX[i][j])
+                    testY.append(setY[i][j])
+        model.fit(trainX, trainY, validation_set=(testX, testY))
+        # save model
+        
 
-        # reset env for next iteration
-        env_reset()
+        model.save(test_model_path + str(i) + ".tflearn")
+        # save statistics
+        #print("Predict")
+        pred = model.predict(setX[i])
+        #print("Calculate Error")
+        error = calculate_error(setY[i], pred)
+        error_list.append(error)
+        #print("Save error stats")
+        save_statistics(error)
+        if i == 1:
+            evaluate(model)
 
-        # wait a bit
-        time.sleep(0.01)
-
-    # Show the agents training and write summary statistics
-    last_summary_time = 0
-    while True:
-        now = time.time()
-        if now - last_summary_time > summary_interval:
-            summary_str = session.run(summary_op)
-            writer.add_summary(summary_str, float(T))
-            last_summary_time = now
+    #save graphs
+    #print("Save Graphs")
+    save_graphs(error_list)
 ##########################################################################
 
 ##########################################################################
 # Evaluate a model.
 ##########################################################################
-def evaluate(session, saver, test_model_path, actions):
-    saver.restore(session, test_model_path)
-    print("Restored model weights from ", test_model_path)
-
-    # reset env
-    env_reset()
-
-    # Unpack graph ops
-    s = graph_ops["s"]
-    q_values = graph_ops["q_values"]
-
-    for i_episode in xrange(num_eval_episodes):
+def evaluate(model):
+    global test_model_path, model_number, actions
+    #network = build_network()
+    #model = tflearn.DNN(network, tensorboard_verbose=0)
+    #restore model
+    #model.load(test_model_path + str(model_number) + ".tflearn")
+    reset_env()
+    s_t = getScreen()
+    while True:
+        # get commands from session
+        readout_t = model.predict([s_t])
+        # send commands to game
+        sendCommands(readout_t)
+        # update screen
         s_t = getScreen()
-        ep_reward = 0
-        while True:
-            # get commands from session
-            readout_t = q_values.eval(session=session, feed_dict={s: [s_t]})
-            action_index = np.argmax(readout_t)
-
-            # send commands to game
-            sendCommands(action_index)
-
-            # update variables
-            s_t1 = getScreen()
-            r_t = 
-            s_t = s_t1
-            ep_reward += r_t
-
-            #condition to exit infinite loop goes here
-
-        print(ep_reward)
-##########################################################################
-
-##########################################################################
-# Build Graph
-##########################################################################
-def build_graph(num_actions, frame_height, frame_width):
-    # Create shared deep q network
-    s, q_network = build_dqn(num_actions, frame_height, frame_width)
-    network_params = tf.trainable_variables()
-    q_values = q_network
-
-    # Create shared target network
-    st, target_q_network = build_dqn(num_actions, frame_height, frame_width)
-    target_network_params = tf.trainable_variables()[len(network_params):]
-    target_q_values = target_q_network
-
-    # Define cost and gradient update op
-    a = tf.placeholder("float", [None, num_actions])
-    y = tf.placeholder("float", [None])
-    action_q_values = tf.reduce_sum(tf.mul(q_values, a), reduction_indices=1)
-    cost = tflearn.mean_square(action_q_values, y)
-    optimizer = tf.train.RMSPropOptimizer(learning_rate)
-    grad_update = optimizer.minimize(cost, var_list=network_params)
-
-    graph_ops = {"s": s,
-                 "q_values": q_values,
-                 "st": st,
-                 "target_q_values": target_q_values,
-                 "reset_target_network_params": reset_target_network_params,
-                 "a": a,
-                 "y": y,
-                 "grad_update": grad_update}
-                 
-    return graph_ops
+        # sleep
+        time.sleep(2)
+    close_env()
 ##########################################################################
 
 ##########################################################################
@@ -382,26 +444,19 @@ def build_graph(num_actions, frame_height, frame_width):
 ##########################################################################
 def main():
     with tf.Session() as tf_session:
-        #configuration variables
-        testing = True
-        test_model_path = ""
-        num_actions = actions.size
-        graph_ops = build_graph(num_actions)
-
-        #saver for model
-        tf_saver = tf.train.Saver(max_to_keep=5)
-
-        if testing:
-            evaluate(tf_session, tf_saver, test_model_path, actions)
-        else:
-            train(   tf_session, tf_saver, test_model_path, actions)
-    # exit application
-    close_env()
+        #are we training?
+        training = True
+        #are we testing?
+        testing = False
+        if training:
+            train()
+        #if testing:
+        #evaluate()
 ##########################################################################
 
 ##########################################################################
 # Entry Point
 ##########################################################################
 if __name__ == "__main__":
-    tf.app.run()
+    main()
 ##########################################################################
