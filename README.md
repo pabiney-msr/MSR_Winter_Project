@@ -21,7 +21,14 @@ Implement a neural network that is capable of playing [Pokémon Red/Blue](https:
 * Choose a different game (Puzzle-Bobble Millennium).
 
 ### Dependencies
-
+* VBA-M
+* TemsprFlow
+* TFlearn
+* matplotlib
+* pyscreenshot
+* PyKeyboard
+* Subprocess
+* openCV (including nonfree)
 
 ### [Pokémon Red/Blue](https://en.wikipedia.org/wiki/Pokémon_Red_and_Blue "Pokémon Red/Blue")
 > “The player controls the protagonist from an [overhead perspective](https://en.wikipedia.org/wiki/Top-down_perspective "overhead perspective") and navigates him throughout the fictional region of Kanto in a quest to master [Pokémon battling](https://en.wikipedia.org/wiki/Pokémon_battle "Pokémon battling"). The goal of the games is to become the champion of the Pokémon League by defeating the eight [Gym Leaders](https://en.wikipedia.org/wiki/Gym_Leaders "Gym Leaders") and then the top four Pokémon trainers in the land, the [Elite Four](https://en.wikipedia.org/wiki/Elite_Four "Elite Foure"). Another objective is to complete the [Pokédex](https://en.wikipedia.org/wiki/Pokédex "Pokédex"), an in-game encyclopedia, by obtaining the 150 available Pokémon. Red and Blue utilize the [Game Link Cable](https://en.wikipedia.org/wiki/Game_Link_Cable "Game Link Cable"), which connects two games together and allows Pokémon to be traded or battled between games. Both titles are independent of each other but feature the same plot, and while they can be played separately, it is necessary for players to trade among both games in order to obtain all of the first 150 Pokémon.”
@@ -46,28 +53,39 @@ Implement a neural network that is capable of playing [Pokémon Red/Blue](https:
 
 **Weekly** | **Steps**
 --- | ---
-**Week 1** | **Week 5**
-~~1. Add Visual Boy Advance to Project~~ | 21. Research LSTM RNN layer(s)
-~~2. Add Pokemon Red/Blue ROM to Project~~ | 22. Add LSTM RNN layer(s) to experiment
-~~3. Add Back-up game (Puzzle Bobble) ROM to Project~~ | 23. Identify and research hyper-parameters of the NN
-~~4. Create GitHub~~ | 24. Incorporate hyper-parameters of the NN
-~~5. Create File for AI in Python~~ | 25. Debug code with the smallest ranges possible to save time
-~~6. Create .gitignore~~ | 26. Estimate time needed for experiment to execute
-~~7. Install Ubuntu 16.04 on Test laptop~~ | 27. Begin execution of experiment
+**Week 1** | **Week 5-7**
+~~1. Add Visual Boy Advance to Project~~ | ~~21. Identify and research hyper-parameters of the NN~~
+~~2. Add Pokemon Red/Blue ROM to Project~~ | ~~22. Incorporate hyper-parameters of the NN~~
+~~3. Add Back-up game (Puzzle Bobble) ROM to Project~~ | ~~23. First outline of paper~~
+~~4. Create GitHub~~ | ~~24. Convert outline to rough draft~~
+~~5. Create File for AI in Python~~ | ~~25. Add research to rough draft~~
+~~6. Create .gitignore~~ | ~~26. Add formatting & illustrations to paper~~
+~~7. Install Ubuntu 16.04 on Test laptop~~ | ~~27. Proofread/fix rough draft~~
  | 
-**Week 2** | **Week 6**
-~~8. Create Readme for GitHub~~ | 28. Evaluate findings of experiment
-~~9. Send Screen of VBA-M as input to AI~~ | 29. First outline of paper
-~~10. Send commands from AI to VBA-M~~ | 30. Add experiment to outline
-~~11. Launch VBA-M through Python~~ | 31. Add research to outline
-~~12. Research CNN layers~~ | 32. Add findings to outline
-~~13. Create experiment with CNN layer(s)~~ | 33. Convert outline to rough draft
-~~14. Add fully connected layer(s) to experiment~~ | 34. Explain choices made for training parameters
- | 35. Compare findings to research
-**Week 3-4** | 
-~~15. Research fully connected layers~~ | **Week 7**
-~~16. Incorporate debug log file output~~ | 36. Proofread/fix rough draft
-~~17. Add graph/chart output~~ | 37. Add formatting & illustrations to paper
+**Week 2** | **Week 8**
+~~8. Create Readme for GitHub~~ | ~~28. Self publish research paper to website~~
+~~9. Send Screen of VBA-M as input to AI~~ | ~~29. List Dependencies~~
+~~10. Send commands from AI to VBA-M~~ | 30. Add OpenCV SIFT to NN
+~~11. Launch VBA-M through Python~~ | 31. Change save format of images from PNG to JPEG to save space in RAM
+~~12. Research CNN layers~~ | 32. Reduce image size within code
+~~13. Create experiment with CNN layer(s)~~ | 33. Debug code with the smallest ranges possible to save time
+~~14. Add fully connected layer(s) to experiment~~ | 34. Begin execution of experiment
+ |  
+**Week 3-4** | **Week 9**
+~~15. Research fully connected layers~~ | 35. Evaluate findings of experiment
+~~16. Incorporate debug log file output~~ | 36. Compare findings to research
+~~17. Add graph/chart output~~ | 37. Explain choices made for training parameters
 ~~18. Create SampleGather.py~~ | 38. Have someone Northwestern that is knowledgeable on NNs proofread and/or edit the latest rough draft
-19. Research TensorFlow and GPU | 39. Finalize research paper
-20. List Dependencies | 40. Self publish research paper to website
+~~19. Research LSTM RNN layer(s)~~ | 39. Finalize research paper
+~~20. Add LSTM RNN layer(s) to experiment~~ |
+
+
+
+
+
+
+
+
+
+
+

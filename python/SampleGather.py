@@ -1,3 +1,15 @@
+"""
+Author: Patrick Abiney
+Last Revised: 03/8/2017
+GitHub: 
+
+Requirements:
+    - 
+References:
+    - 
+Links:
+    - 
+"""
 import subprocess
 import signal
 import os
@@ -73,7 +85,7 @@ def main():
     with open(save_path, 'r+') as f:
         read_data = f.read()
         for line in read_data:
-            if line == '\n'
+            if line == '\n':
                 G += 1
         #mkdir for new images
         new_dir = sample_path + str(G) + "/"

@@ -1,3 +1,15 @@
+"""
+Author: Patrick Abiney
+Last Revised: 03/8/2017
+GitHub: 
+
+Requirements:
+    - 
+References:
+    - 
+Links:
+    - 
+"""
 #for random
 import random
 #for sleep

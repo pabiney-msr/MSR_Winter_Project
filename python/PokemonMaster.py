@@ -1,6 +1,6 @@
 """
 Author: Patrick Abiney
-Last Revised: 02/28/2017
+Last Revised: 03/8/2017
 GitHub: 
 
 Requirements:
@@ -25,6 +25,7 @@ import numpy as np
 ### screenshot ###
 import pyscreenshot
 from PIL import Image
+import cv2
 ### sleep ###
 import time
 ### input ###
@@ -204,8 +205,8 @@ def save_statistics(stats):
         except OSError as exc: # Guard against race condition
             if exc.errno != errno.EEXIST:
                 raise
-    open(stats_path + "stats.text", 'a').close()
-    with open(stats_path + "stats.text", 'a') as file:
+    open(stats_path + "stats.txt", 'a').close()
+    with open(stats_path + "stats.txt", 'a') as file:
         file.write(str(stats) + '\n')
     file.close()
 
@@ -256,8 +257,9 @@ def load_sets():
             tmpX = []
             tmpY = []
 
-            for line in line_list:                #load labels
-                #print(line)
+            for line in line_list:
+                #load labels
+                print(line)
                 space_index = line.find(' ')
                 label1 = line[:space_index]
                 labelB = line[space_index+1:line.find('\n')-1]
@@ -282,8 +284,14 @@ def load_sets():
 
                 tmpY.append(action_array)
                 #load images
-                im = Image.open(curr_path + str(j) + ".png")
+                #im = Image.open(curr_path + str(j) + ".png")
+                im = cv2.imread(curr_path + str(j) + ".png",0)
                 pix = np.asarray(im)
+                print(pix)
+                #gray= cv2.cvtColor(,cv2.COLOR_BGR2GRAY)
+                kp = cv2.xfeatures2d.  SURF.detect(im,None)
+                print(kp)
+
                 tmpX.append(output[:, pix])
                 j += 1
             setX.append(tmpX)
@@ -326,7 +334,7 @@ def calculate_error(key, pred):
 ##########################################################################
 #Build network
 ##########################################################################
-def build_network():
+def build_network(nb_filter_1, filter_size_1, strides_1, nb_filter_2, filter_size_2, strides_2, n_units_1, n_units_2, forget_bias_1, dropout_in_1, dropout_out_1):
     global num_actions, frame_height, frame_width
     net = tflearn.input_data(shape=[None, 1, frame_height, frame_width])
 
@@ -335,15 +343,17 @@ def build_network():
     net = tf.transpose(net, [0, 2, 3, 1])
 
     ## 2d conv layers
-    net = tflearn.conv_2d(net, 32, 8, strides=4, activation='relu')
-    net = tflearn.conv_2d(net, 64, 4, strides=2, activation='relu')
+    net = tflearn.conv_2d(net, 1, 2, strides=1, activation='relu')
+    net = tflearn.conv_2d(net, 1, 2, strides=1, activation='relu')
+    #net = tflearn.conv_2d(net, nb_filter_1, filter_size_1, strides=strides_1, activation='relu')
+    #net = tflearn.conv_2d(net, nb_filter_2, filter_size_2, strides=strides_2, activation='relu')
 
     ## Fully connected layer
-    net = tflearn.fully_connected(net, 256, activation='relu')
+    net = tflearn.fully_connected(net, 2, activation='relu')
 
     ## lstm layers
-    #net = tf.reshape([1, net], shape=[1, 2, 0])
-    #net = tflearn.lstm(net, 256, dropout=0.8)
+    net = tf.transpose([net], [1, 0, 2])
+    net = tflearn.lstm(net, 2) #, dropout=(dropout_in_1, dropout_out_1), forget_bias=forget_bias_1)
 
     net = tflearn.fully_connected(net, num_actions)
 
@@ -359,60 +369,72 @@ def build_network():
 def train():
     global actions, test_model_path
     # Initialize variables
-    network = build_network()
     #load saved training info here
     setX, setY = load_sets()
     num_set = len(setX)
     #error percent list
     error_list = []
-
-    for i in range(0, num_set):
-        #print("Training " + str(i))
-        model = tflearn.DNN(network, tensorboard_verbose=0)
-        #print("Fit")
-        #print(setY[i])
-        #print(setY[num_set-i-1])
-        trainX = []
-        trainY = []
-        testX  = []
-        testY  = []
-
-        length = len(setY[i])
-        percent = .95
-        portion = length * percent
-        for j in range(0, length):
-            #if over percent remainin
-            if (length-j-1) <= portion and len(trainX) <= portion:
-                #add to train
-                trainX.append(setX[i][j])
-                trainY.append(setY[i][j])
-            else:
-                if random.randrange(0, 100) <= 50 and len(trainX) <= portion:
+    with tf.Session() as tf_session:
+        network = build_network(2, 2, 2, 2, 2, 2, 2, 2, .8, .8, .8)
+        for i in range(0, num_set):
+            trainX = []
+            trainY = []
+            testX  = []
+            testY  = []
+            length = len(setY[i])
+            percent = .95
+            portion = length * percent
+            for j in range(0, length):
+                #if over percent remainin
+                if (length-j-1) <= portion and len(trainX) <= portion:
                     #add to train
                     trainX.append(setX[i][j])
                     trainY.append(setY[i][j])
                 else:
-                    #add to test
-                    testX.append(setX[i][j])
-                    testY.append(setY[i][j])
-        model.fit(trainX, trainY, validation_set=(testX, testY))
-        # save model
-        
+                    if random.randrange(0, 100) <= 50 and len(trainX) <= portion:
+                        #add to train
+                        trainX.append(setX[i][j])
+                        trainY.append(setY[i][j])
+                    else:
+                        #add to test
+                        testX.append(setX[i][j])
+                        testY.append(setY[i][j])
+        #for nb_filter_1 in range(1, 256):
+        #    for filter_size_1 in range(1, 256):
+        #        for strides_1 in range(1, 20):
+        #            for nb_filter_2 in range(1, 256):
+        #                for filter_size_2 in range(1, 256):
+        #                    for strides_2 in range(1, 20):
+        #                        for n_units_1 in range(1, 256):
+        #                            for n_units_2 in range(1, 256):
+        #                                for forget_bias_1 in range(1, 101):
+        #                                    for dropout_in_1 in range(1, 101):
+        #                                        for dropout_out_1 in range(1, 101):
 
-        model.save(test_model_path + str(i) + ".tflearn")
-        # save statistics
-        #print("Predict")
-        pred = model.predict(setX[i])
-        #print("Calculate Error")
-        error = calculate_error(setY[i], pred)
-        error_list.append(error)
-        #print("Save error stats")
-        save_statistics(error)
-        if i == 1:
-            evaluate(model)
-
+            print("Training")
+            model = tflearn.DNN(network)
+            print("Fit")
+            print(len(trainX))
+            print(len(trainY))
+            print(len(testX))
+            print(len(testY))
+    
+            model.fit(trainX, trainY, validation_set=(testX, testY), n_epoch=1)
+    
+            # save statistics
+            print("Predict")
+            pred = model.predict(setX[i])
+            print("Calculate Error")
+            error = calculate_error(setY[i], pred)
+            error_list.append(error)
+            print("Save error stats")
+            save_statistics(error)
+            # save model
+            model.save(test_model_path + str(len(error_list)) + ".tflearn")
+            #if i == 0:
+            #    evaluate(model)
     #save graphs
-    #print("Save Graphs")
+    print("Save Graphs")
     save_graphs(error_list)
 ##########################################################################
 
@@ -426,6 +448,7 @@ def evaluate(model):
     #restore model
     #model.load(test_model_path + str(model_number) + ".tflearn")
     reset_env()
+    time.sleep(10)
     s_t = getScreen()
     while True:
         # get commands from session
@@ -443,7 +466,6 @@ def evaluate(model):
 # Main Function
 ##########################################################################
 def main():
-    with tf.Session() as tf_session:
         #are we training?
         training = True
         #are we testing?
